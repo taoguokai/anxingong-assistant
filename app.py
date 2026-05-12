@@ -151,8 +151,6 @@ def chat():
 # 🚀 启动应用
 # ============================================
 if __name__ == '__main__':
-    print("=" * 50)
-    print("🤖 安信工引路者 已启动！")
-    print("=" * 50)
+    import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
