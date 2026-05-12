@@ -1,13 +1,13 @@
 from flask import Flask, render_template, request, jsonify
 import requests
 import json
-
+import os
 app = Flask(__name__)
 
 # ============================================
 # 🔑 在这里填入你的 DeepSeek API Key
 # ============================================
-DEEPSEEK_API_KEY = "sk-4f51a672eb914eb68977e87db67a24cd"
+DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
  # ⚠️ 替换成你的！！！
 DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions"
 
@@ -155,4 +155,5 @@ if __name__ == '__main__':
     print("🌐 访问地址: http://127.0.0.1:5000")
     print("=" * 50)
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
