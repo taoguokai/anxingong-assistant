@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安信工引路者 - 新生AI问答助手</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+            max-height: 700px;
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .chat-header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .chat-header p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f5f7fa;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .message.user {
+            justify-content: flex-end;
+        }
+        
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        
+        .message.bot .message-content {
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .message.user .message-content {
+            background: #1a73e8;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .message.user .avatar {
+            margin-left: 10px;
+            margin-right: 0;
+            background: #1a73e8;
+            color: white;
+        }
+        
+        .chat-input {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .chat-input input:focus {
+            border-color: #1a73e8;
+        }
+        
+        .chat-input button {
+            padding: 12px 24px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .chat-input button:hover {
+            background: #1557b0;
+        }
+        
+        .quick-questions {
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .quick-btn {
+            padding: 6px 12px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .quick-btn:hover {
+            background: #1a73e8;
+            color: white;
+            border-color: #1a73e8;
+        }
+        
+        .typing {
+            display: inline-block;
+            width: 30px;
+            text-align: center;
+        }
+        
+        @keyframes blink {
+            0%, 60%, 100% { opacity: 1; }
+            30% { opacity: 0; }
+        }
+        
+        .typing span {
+            animation: blink 1.4s infinite;
+            animation-fill-mode: both;
+        }
+        
+        .typing span:nth-child(2) { animation-delay: 0.2s; }
+        .typing span:nth-child(3) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>🤖 安信工引路者</h1>
+            <p>安徽信息工程学院 · 新生AI问答助手</p>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot">
+                <div class="avatar">🤖</div>
+                <div class="message-content">
+                    同学你好呀！我是安信工引路者 🎉<br><br>
+                    报到流程、宿舍分配、校园卡、快递点、奖学金...<br>
+                    有什么问题尽管问我～<br><br>
+                    <strong>试试问：</strong><br>
+                    📋 报到需要带什么材料？<br>
+                    🏠 宿舍怎么分配？<br>
+                    📦 快递站在哪里？<br>
+                    💰 怎么申请奖学金？
+                </div>
+            </div>
+        </div>
+        
+        <div class="quick-questions">
+            <button class="quick-btn" data-question="报到需要带什么材料？">📋 报到材料</button>
+            <button class="quick-btn" data-question="宿舍怎么分配？">🏠 宿舍分配</button>
+            <button class="quick-btn" data-question="快递站在哪里？">📦 快递位置</button>
+            <button class="quick-btn" data-question="怎么申请奖学金？">💰 奖学金申请</button>
+            <button class="quick-btn" data-question="校园卡丢了怎么办？">💳 校园卡补办</button>
+        </div>
+        
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="输入你的问题..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <button onclick="sendMessage()">发送</button>
+        </div>
+    </div>
+
+    <script>
+        let conversationHistory = [];
+        
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            input.value = '';
+            
+            // 显示用户消息
+            appendMessage('user', message);
+            conversationHistory.push({"role": "user", "content": message});
+            
+            // 显示打字状态
+            const typingDiv = addTypingIndicator();
+            
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        history: conversationHistory
+                    })
+                });
+                
+                const data = await response.json();
+                removeTypingIndicator(typingDiv);
+                
+                if (data.answer) {
+                    appendMessage('bot', data.answer);
+                    conversationHistory.push({"role": "assistant", "content": data.answer});
+                } else if (data.error) {
+                    appendMessage('bot', '抱歉：' + data.error);
+                }
+                
+            } catch (error) {
+                removeTypingIndicator(typingDiv);
+                appendMessage('bot', '抱歉，网络出了点问题，请稍后再试～');
+            }
+        }
+        
+        function appendMessage(role, content) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar';
+            avatar.textContent = role === 'user' ? '👤' : '🤖';
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.innerHTML = content.replace(/\n/g, '<br>');
+            
+            if (role === 'user') {
+                messageDiv.appendChild(contentDiv);
+                messageDiv.appendChild(avatar);
+            } else {
+                messageDiv.appendChild(avatar);
+                messageDiv.appendChild(contentDiv);
+            }
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        function addTypingIndicator() {
+            const messagesDiv = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `
+                <div class="avatar">🤖</div>
+                <div class="message-content">
+                    <div class="typing">
+                        <span>●</span><span>●</span><span>●</span>
+                    </div>
+                </div>
+            `;
+            messagesDiv.appendChild(typingDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            return typingDiv;
+        }
+        
+        function removeTypingIndicator(typingDiv) {
+            if (typingDiv && typingDiv.remove) {
+                typingDiv.remove();
+            } else {
+                const el = document.getElementById('typingIndicator');
+                if (el) el.remove();
+            }
+        }
+        
+        // 快捷问题按钮
+        document.querySelectorAll('.quick-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('messageInput').value = btn.dataset.question;
+                sendMessage();
+            });
+        });
+    </script>
+</body>
+</html>
