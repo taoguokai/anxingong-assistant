@@ -129,7 +129,9 @@ def call_deepseek(user_message, conversation_history=None):
 def index():
     """首页 - 显示聊天界面"""
     return render_template('index.html')
-
+@app.route('/health')
+def health():
+    return "OK", 200
 @app.route('/chat', methods=['POST'])
 def chat():
     """处理对话请求"""
